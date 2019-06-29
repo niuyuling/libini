@@ -9,5 +9,7 @@
     git clone https://github.com/niuyuling/libini
     cd libini
     make
+
+# test
     gcc -Wall test.c -o test -L./ -lini -static
     ./test
