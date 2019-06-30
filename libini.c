@@ -20,15 +20,14 @@ int getinikeystring(char *title, char *key, char *filename, char *buf)
     while (NULL != fgets(sLine, BUFFER_SIZE, fp)) {
         if (0 == strncmp("//", sLine, 2))
             continue;
-        if ('#' == sLine[0])
+        if (0 == strncmp("#", sLine, 1))
             continue;
-        if (';' == sLine[0])
+        if (0 == strncmp(";", sLine, 1))
             continue;
         wTmp = strchr(sLine, '=');
         if ((NULL != wTmp) && (1 == flag)) {
             sLine[strlen(sLine) - 1] = '\0';
             if (0 == strncmp(key, sLine, strlen(key)) && !(strncasecmp(strtok(sLine, "="), key, strlen(strtok(sLine, "="))))) {
-                //printf("%s\n", sLine);
                 fclose(fp);
                 while (*(wTmp + 1) == ' ') {
                     wTmp++;
