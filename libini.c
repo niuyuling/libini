@@ -5,6 +5,20 @@
 
 #define BUFFER_SIZE 1024
 
+char *delchar(char *str, char *temp)
+{
+    int len = strlen(str);
+    char *p1 = str;
+    if ((0 == strncmp("\"", str, 1)) && (str[len - 1] == ';')
+        && (str[len - 2] == '"')) {
+        p1[len - 2] = '\0';
+        return strcpy(temp, p1 + 1);
+    } else {
+        return str;
+    }
+    return str;
+}
+
 int getinikeystring(char *title, char *key, char *filename, char *buf)
 {
     FILE *fp;
@@ -20,19 +34,22 @@ int getinikeystring(char *title, char *key, char *filename, char *buf)
     while (NULL != fgets(sLine, BUFFER_SIZE, fp)) {
         if (0 == strncmp("//", sLine, 2))
             continue;
-        if (0 == strncmp("#", sLine, 1))
+        if (sLine[0] == '#' || 0 == strncmp("#", sLine, 1))
             continue;
-        if (0 == strncmp(";", sLine, 1))
+        if (sLine[0] == ';' || 0 == strncmp(";", sLine, 1))
             continue;
         wTmp = strchr(sLine, '=');
         if ((NULL != wTmp) && (1 == flag)) {
             sLine[strlen(sLine) - 1] = '\0';
-            if (0 == strncmp(key, sLine, strlen(key)) && !(strncasecmp(strtok(sLine, "="), key, strlen(strtok(sLine, "="))))) {
+            if (0 == strncmp(key, sLine, strlen(key))
+                &&
+                !(strncasecmp
+                  (strtok(sLine, "="), key, strlen(strtok(sLine, "="))))) {
                 fclose(fp);
                 while (*(wTmp + 1) == ' ') {
                     wTmp++;
                 }
-                strcpy(buf, wTmp + 1);
+                delchar(strcpy(buf, wTmp + 1), buf);
                 return 0;
             }
         } else {
@@ -63,9 +80,13 @@ int putinikeystring(char *title, char *key, char *val, char *filename)
             wTmp = strchr(sLine, '=');
             if ((NULL != wTmp) && (1 == flag)) {
                 strcpy(sLine_backup, sLine);
-                if (0 == strncmp(key, sLine, strlen(key)) && !(strncasecmp(strtok(sLine_backup, "="), key, strlen(strtok(sLine_backup, "="))))) {
+                if (0 == strncmp(key, sLine, strlen(key))
+                    &&
+                    !(strncasecmp
+                      (strtok(sLine_backup, "="), key,
+                       strlen(strtok(sLine_backup, "="))))) {
                     flag = 2;
-                    sprintf(wTmp+1, "%s\n", val);
+                    sprintf(wTmp + 1, "%s\n", val);
                 }
             } else {
                 if (0 == strncmp(sTitle, sLine, strlen(sTitle))) {
@@ -101,4 +122,3 @@ float getinikeyfloat(char *title, char *key, char *filename)
     getinikeystring(title, key, filename, buf);
     return atof(buf);
 }
-
