@@ -5,6 +5,7 @@
 
 #define BUFFER_SIZE 1024
 
+// 去除str前的"和后的";
 char *delchar(char *str, char *temp)
 {
     int len = strlen(str);
@@ -19,6 +20,28 @@ char *delchar(char *str, char *temp)
     return str;
 }
 
+// 去除字符空格
+char *del_space(char *str, char *buf)
+{
+    unsigned int uLen = strlen(str);
+
+    if (0 == uLen) {
+        return '\0';
+    }
+
+    memset(buf, 0, uLen + 1);
+
+    unsigned int i = 0, j = 0;
+    for (i = 0; i < uLen + 1; i++) {
+        if (str[i] != ' ') {
+            buf[j++] = str[i];
+        }
+    }
+    buf[j] = '\0';
+
+    return buf;
+}
+
 int getinikeystring(char *title, char *key, char *filename, char *buf)
 {
     FILE *fp;
@@ -26,6 +49,7 @@ int getinikeystring(char *title, char *key, char *filename, char *buf)
     char sTitle[BUFFER_SIZE], *wTmp;
     char sLine[BUFFER_SIZE];
     sprintf(sTitle, "[%s]", title);
+    char buf1[BUFFER_SIZE];
 
     if (NULL == (fp = fopen(filename, "r"))) {
         perror("fopen");
@@ -41,10 +65,12 @@ int getinikeystring(char *title, char *key, char *filename, char *buf)
         wTmp = strchr(sLine, '=');
         if ((NULL != wTmp) && (1 == flag)) {
             sLine[strlen(sLine) - 1] = '\0';
-            if (0 == strncmp(key, sLine, strlen(key))
-                &&
+
+            //if (0 == strncmp(key, sLine, strlen(key)) && !(strncasecmp(strtok(sLine, "="), key, strlen(strtok(sLine, "="))))) {
+            if (0 == strncmp(key, sLine, strlen(key)) &&
                 !(strncasecmp
-                  (strtok(sLine, "="), key, strlen(strtok(sLine, "="))))) {
+                  (del_space(strtok(sLine, "="), buf1), key,
+                   strlen(del_space(strtok(sLine, "="), buf1))))) {   // 判断key长度的等号左边字符是否相等, 判断key长度的等号左边字符(去除空格)是否相等
                 fclose(fp);
                 while (*(wTmp + 1) == ' ') {
                     wTmp++;
@@ -64,6 +90,7 @@ int getinikeystring(char *title, char *key, char *filename, char *buf)
 
 int putinikeystring(char *title, char *key, char *val, char *filename)
 {
+    char buf[BUFFER_SIZE];
     FILE *fpr;
     FILE *fpw;
     int flag = 0;
@@ -83,8 +110,8 @@ int putinikeystring(char *title, char *key, char *val, char *filename)
                 if (0 == strncmp(key, sLine, strlen(key))
                     &&
                     !(strncasecmp
-                      (strtok(sLine_backup, "="), key,
-                       strlen(strtok(sLine_backup, "="))))) {
+                      (del_space(strtok(sLine_backup, "="), buf), key,
+                       strlen(del_space(strtok(sLine_backup, "="), buf))))) {
                     flag = 2;
                     sprintf(wTmp + 1, "%s\n", val);
                 }

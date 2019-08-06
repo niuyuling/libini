@@ -3,13 +3,13 @@ CC := $(CROSS_COMPILE)gcc
 STRIP := $(CROSS_COMPILE)strip
 AR := $(CROSS_COMPILE)ar
 CFLAGS += -g -Wall
-LIBS = libini.so
+DLIB = libini.so
 SLIB = libini.a
 
 all: libini.o
-	$(CC) $(CFLAGS) -FPIC -shared $^ -o $(LIBS)
+	$(CC) $(CFLAGS) -FPIC -shared $^ -o $(DLIB)
 	$(AR) -rc $(SLIB) $^
 
 clean:
 	rm -rf *.o
-	rm $(LIBS) $(SLIB)
+	rm $(DLIB) $(SLIB)
