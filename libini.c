@@ -42,8 +42,30 @@ char *del_space(char *str, char *buf)
     return buf;
 }
 
+// 创建临时内存
+int libini_memory(char **pp)
+{
+    if (pp != NULL) {
+        char *tmp = (char *)malloc(BUFFER_SIZE);
+        if (tmp != NULL) {
+            *pp = tmp; // pp的地址指向tmp
+            return 1;
+        }
+    }
+    return -1;
+}
+
+// 释放临时内存
+void libini_free(char *p)
+{
+    if (p != NULL) {
+        free(p);
+    }
+}
+
 int getinikeystring(char *title, char *key, char *filename, char *buf)
 {
+    bzero(buf, 0);
     FILE *fp;
     int flag = 0;
     char sTitle[BUFFER_SIZE], *wTmp;
